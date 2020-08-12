@@ -9,7 +9,7 @@ idea {
     }
 }
 
-subprojects {F
+subprojects {
     apply plugin: 'idea'
     idea {
         module {
