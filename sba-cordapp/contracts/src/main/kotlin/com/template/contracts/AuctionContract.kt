@@ -20,8 +20,8 @@ class AuctionContract : Contract {
         val command = tx.commands.requireSingleCommand<AuctionContract.Commands>()
         when(command.value){
             is Commands.Issue -> requireThat{
-                "No inputs should be consumed when issuing an Auction." using (tx.inputs.isEmpty())
-                "Only one output state should be created when issuing an Auction." using (tx.outputs.size == 1)
+                "No inputs should be consumed when issuing an auction." using (tx.inputs.isEmpty())
+                "Only one output state should be created when issuing an auction." using (tx.outputs.size == 1)
                 val auction = tx.outputsOfType<AuctionState>().single()
                 "The proposed state status must be 'Open'" using (auction.status == "Open")
                 "The auction must begin with zero bids." using (auction.acknowledgedBids.isEmpty())
@@ -35,10 +35,25 @@ class AuctionContract : Contract {
                 "One output state must be consumed when acknowledging a bidder." using (tx.outputs.size == 1)
                 val auctionInput = tx.inputsOfType<AuctionState>().single()
                 val auctionOutput = tx.outputsOfType<AuctionState>().single()
-                "cannot alter the number of required bids." using (auctionInput.numOfRequiredBids == auctionOutput.numOfRequiredBids)
+                "Cannot alter the number of required bids." using (auctionInput.numOfRequiredBids == auctionOutput.numOfRequiredBids)
                 "The newly proposed list of acknowledged bids must grow in size." using (auctionOutput.acknowledgedBids.size > auctionInput.acknowledgedBids.size)
                 "The status cannot change unless the numOfRequiredBids is met." using ((auctionInput.status != auctionOutput.status) && (auctionOutput.acknowledgedBids.size < auctionOutput.numOfRequiredBids))
                 "Winner cannot be set unless the numOfRequiredBids is met." using ((auctionInput.winner != null) && (auctionOutput.acknowledgedBids.size < auctionOutput.numOfRequiredBids))
+                "The auctioneer cannot be changed." using (auctionInput.auctioneer != auctionOutput.auctioneer)
+                "The participant list cannot be changed." using (auctionInput.participants == auctionOutput.participants)
+            }
+
+            is Commands.CloseAuction -> requireThat {
+                "One input state must be consumed when closing an auction." using (tx.inputs.size == 1)
+                "One output state must be consumed when closing an auction." using (tx.outputs.size == 1)
+                val auctionInput = tx.inputsOfType<AuctionState>().single()
+                val auctionOutput = tx.outputsOfType<AuctionState>().single()
+                "Proposed status must be 'Closed'" using (auctionOutput.status == "Closed")
+                "Input's status must be 'Open'" using (auctionInput.status == "Input")
+                "Cannot alter the number of required bids." using (auctionInput.numOfRequiredBids == auctionOutput.numOfRequiredBids)
+                "The list of acknowledged bids cannot be altered." using (auctionInput.acknowledgedBids.size == auctionOutput.acknowledgedBids.size)
+                "The auctioneer cannot be changed." using (auctionInput.auctioneer != auctionOutput.auctioneer)
+                "The participant list cannot be changed." using (auctionInput.participants == auctionOutput.participants)
             }
         }
     }
