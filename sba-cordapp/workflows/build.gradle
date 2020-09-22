@@ -39,6 +39,7 @@ configurations {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile group: 'com.google.code.gson', name: 'gson', version: gson_version
 //    implementation "com.r3.conclave:conclave-client:$conclaveVersion"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "junit:junit:$junit_version"
