@@ -15,7 +15,7 @@ import java.security.PublicKey
 // *********
 @InitiatingFlow
 @StartableByRPC
-class IssueAuction(
+class IssueAuctionFlow(
         private val numOfRequiredBids: Int,
         private val participants: List<Party>
 ) : FlowLogic<SignedTransaction>() {
@@ -49,7 +49,7 @@ class IssueAuction(
     }
 }
 
-@InitiatedBy(IssueAuction::class)
+@InitiatedBy(IssueAuctionFlow::class)
 class IssueAuctionResponder(val counterpartySession: FlowSession) : FlowLogic<SignedTransaction>() {
     @Suspendable
     override fun call(): SignedTransaction {
