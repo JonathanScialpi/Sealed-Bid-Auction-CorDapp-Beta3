@@ -19,33 +19,29 @@ public class HostController {
 	AtomicReference<byte[]> requestToDeliver = new AtomicReference<>();
 	List<byte[]> allBids = new ArrayList<>();
 
-	@GetMapping(path="/status", produces= "application/json")
-	public String greeting() {
-		return "Up and running!";
+	public HostController() throws EnclaveLoadException {
+		// Load our enclave
+		enclave = EnclaveHost.load("com.r3.conclave.sample.enclave.SealedBidAuction");
+
+		OpaqueBytes spid = new OpaqueBytes(new byte[16]);
+		String attestationKey = "mock-key";
+
+		// Start the Enclave.
+		enclave.start(spid, attestationKey, new EnclaveHost.MailCallbacks() {
+			@Override
+			public void postMail(byte[] encryptedBytes, String routingHint) {
+				requestToDeliver.set(encryptedBytes);
+			}
+		});
 	}
 
 	// A GET endpoint used to retrieve the remote attestation.
 	@GetMapping(path="/sealed_bid_ra")
-	public byte[] get_sealed_bid_ra() throws EnclaveLoadException {
-
-			// Load our enclave
-			enclave = EnclaveHost.load("com.r3.conclave.sample.enclave.SealedBidAuction");
-
-			OpaqueBytes spid = new OpaqueBytes(new byte[16]);
-			String attestationKey = "mock-key";
-
-			// Start the Enclave.
-			enclave.start(spid, attestationKey, new EnclaveHost.MailCallbacks() {
-				@Override
-				public void postMail(byte[] encryptedBytes, String routingHint) {
-					requestToDeliver.set(encryptedBytes);
-				}
-			});
-
+	public byte[] get_sealed_bid_ra() {
 		    return enclave.getEnclaveInstanceInfo().serialize();
 	}
 
-	// A POST endpoint which accepts raw encrypted bytes sent by a client to deliever to an enclave.
+	// A POST endpoint which accepts raw encrypted bytes sent by a client to deliver to an enclave.
 	@PostMapping(path = "/send_bid")
 	public byte[] sendBid(@RequestBody byte[] bid){
 
