@@ -19,20 +19,25 @@ public class SealedBidAuction extends Enclave implements EnclaveCall {
     public byte[] invoke(byte[] bid) {
         allBids.add(bid);
         int highestBid = 0;
-        int currentBid;
-        for (int i = 0; i < allBids.size(); i++){
-            currentBid = ByteBuffer.wrap(allBids.get(i)).getInt();
-            if (currentBid > highestBid){
-                highestBid = currentBid;
+        if(allBids.size() == 5){
+            int currentBid;
+            for (int i = 0; i < allBids.size(); i++){
+                currentBid = ByteBuffer.wrap(allBids.get(i)).getInt();
+                if (currentBid > highestBid){
+                    highestBid = currentBid;
+                }
             }
         }
+
         return ByteBuffer.allocate(4).putInt(highestBid).array();
     }
 
     @Override
     protected void receiveMail(long id, EnclaveMail mail) {
         byte[] submitBid = invoke(mail.getBodyAsBytes());
-        MutableMail reply = createMail(mail.getAuthenticatedSender(), submitBid);
-        postMail(reply, null);
+        if(allBids.size() == 5){
+            MutableMail reply = createMail(mail.getAuthenticatedSender(), submitBid);
+            postMail(reply, null);
+        }
     }
 }
