@@ -6,6 +6,8 @@ sealed-bid-auction/Webserver/build
 sealed-bid-auction/Webserver/buildscripts
 sealed-bid-auction/Webserver/host/lib
 sealed-bid-auction/Client/.idea/*
+sealed-bid-auction/Client/.gradle/*
+sealed-bid-auction/Client/build/*
 
 # Eclipse, ctags, Mac metadata, log files
 sba-cordapp/.classpath

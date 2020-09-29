@@ -1,13 +1,10 @@
 package com.r3.conclave.sample.host;
 
 import com.r3.conclave.common.OpaqueBytes;
-import com.r3.conclave.host.EnclaveLoadException;
 import com.r3.conclave.host.EnclaveHost;
+import com.r3.conclave.host.EnclaveLoadException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This tests the enclave in a simulated hardware environment, thus not needing real hardware only the correct OS.
